@@ -1,0 +1,209 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum ElectionType {
+  National
+  ByElection
+  Referendum
+}
+
+enum ElectionStatus {
+  Planning
+  Active
+  Archived
+}
+
+enum MilestoneStatus {
+  Planned
+  Ongoing
+  Completed
+  Delayed
+  Cancelled
+}
+
+enum DependencyType {
+  FinishToStart
+  StartToStart
+}
+
+enum CommunicationType {
+  PressRelease
+  SocialMedia
+  SMS
+  WebsiteUpdate
+}
+
+enum CommunicationStatus {
+  Draft
+  PendingApproval
+  Published
+}
+
+enum AlertPriority {
+  Low
+  Medium
+  High
+  Critical
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+// Models
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  users       User[]
+  alerts      Alert[]
+}
+
+model User {
+  id            String     @id @default(uuid())
+  username      String     @unique
+  email         String     @unique
+  passwordHash  String     @map("password_hash")
+  roleId        Int        @map("role_id")
+  role          Role       @relation(fields: [roleId], references: [id])
+  department    String?
+  isActive      Boolean    @default(true) @map("is_active")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  auditLogs     AuditLog[]
+  uploadedDocs  Document[]
+
+  @@map("users")
+}
+
+model ElectionCycle {
+  id        Int            @id @default(autoincrement())
+  name      String
+  type      ElectionType
+  startDate DateTime       @map("start_date")
+  endDate   DateTime       @map("end_date")
+  status    ElectionStatus @default(Planning)
+  milestones Milestone[]
+
+  @@map("election_cycles")
+}
+
+model Milestone {
+  id                    Int       @id @default(autoincrement())
+  electionCycleId       Int       @map("election_cycle_id")
+  electionCycle         ElectionCycle @relation(fields: [electionCycleId], references: [id])
+  title                 String
+  description           String?
+  legalBasis            String?   @map("legal_basis")
+  responsibleDepartment String?   @map("responsible_department")
+  startDate             DateTime? @map("start_date")
+  endDate               DateTime? @map("end_date")
+  isStatutory           Boolean   @default(false) @map("is_statutory")
+  status                MilestoneStatus @default(Planned)
+  
+  // Self-relation for sub-tasks
+  parentMilestoneId     Int?      @map("parent_milestone_id")
+  parentMilestone       Milestone? @relation("SubTasks", fields: [parentMilestoneId], references: [id])
+  subTasks              Milestone[] @relation("SubTasks")
+
+  // Dependencies
+  predecessors          MilestoneDependency[] @relation("Predecessor")
+  successors            MilestoneDependency[] @relation("Successor")
+
+  // Relations
+  communicationActions  CommunicationAction[]
+  publicCalendarEntries PublicCalendarEntry[]
+  alerts                Alert[]
+  documents             Document[]
+
+  @@map("milestones")
+}
+
+model MilestoneDependency {
+  id                    Int            @id @default(autoincrement())
+  predecessorMilestoneId Int           @map("predecessor_milestone_id")
+  predecessor           Milestone      @relation("Predecessor", fields: [predecessorMilestoneId], references: [id])
+  successorMilestoneId  Int            @map("successor_milestone_id")
+  successor             Milestone      @relation("Successor", fields: [successorMilestoneId], references: [id])
+  lagDays               Int            @default(0) @map("lag_days")
+  dependencyType        DependencyType @default(FinishToStart) @map("dependency_type")
+
+  @@map("milestone_dependencies")
+}
+
+model CommunicationAction {
+  id             Int                 @id @default(autoincrement())
+  milestoneId    Int                 @map("milestone_id")
+  milestone      Milestone           @relation(fields: [milestoneId], references: [id])
+  type           CommunicationType
+  contentDraft   String?             @map("content_draft")
+  targetAudience String?             @map("target_audience")
+  language       String?
+  status         CommunicationStatus @default(Draft)
+  isRiskResponse Boolean             @default(false) @map("is_risk_response")
+
+  @@map("communication_actions")
+}
+
+model PublicCalendarEntry {
+  id                Int       @id @default(autoincrement())
+  milestoneId       Int       @map("milestone_id")
+  milestone         Milestone @relation(fields: [milestoneId], references: [id])
+  publicTitle       String    @map("public_title")
+  publicDescription String?   @map("public_description")
+  isPublished       Boolean   @default(false) @map("is_published")
+
+  @@map("public_calendar_entries")
+}
+
+model Alert {
+  id               Int           @id @default(autoincrement())
+  milestoneId      Int           @map("milestone_id")
+  milestone        Milestone     @relation(fields: [milestoneId], references: [id])
+  triggerCondition String        @map("trigger_condition")
+  recipientRoleId  Int           @map("recipient_role_id")
+  recipientRole    Role          @relation(fields: [recipientRoleId], references: [id])
+  priority         AlertPriority
+  isActive         Boolean       @default(true) @map("is_active")
+
+  @@map("alerts")
+}
+
+model AuditLog {
+  id          BigInt      @id @default(autoincrement())
+  userId      String      @map("user_id")
+  user        User        @relation(fields: [userId], references: [id])
+  entityTable String      @map("entity_table")
+  entityId    Int         @map("entity_id")
+  action      AuditAction
+  oldValues   Json?       @map("old_values")
+  newValues   Json?       @map("new_values")
+  timestamp   DateTime    @default(now())
+
+  @@map("audit_logs")
+}
+
+model Document {
+  id          Int       @id @default(autoincrement())
+  milestoneId Int       @map("milestone_id")
+  milestone   Milestone @relation(fields: [milestoneId], references: [id])
+  filePath    String    @map("file_path")
+  fileType    String    @map("file_type")
+  uploadedBy  String    @map("uploaded_by")
+  uploader    User      @relation(fields: [uploadedBy], references: [id])
+  uploadedAt  DateTime  @default(now()) @map("uploaded_at")
+
+  @@map("documents")
+}
