@@ -3,7 +3,9 @@ version: '3.8'
 services:
   # Node.js Backend Service
   api:
-    build: .
+    build: 
+      context: .
+      target: dev
     ports:
       - "3000:3000"
     environment:
@@ -15,6 +17,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+      - ./uploads:/usr/src/app/uploads
     command: npm run dev
 
   # PostgreSQL Database Service

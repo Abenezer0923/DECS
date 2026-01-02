@@ -1,25 +1,27 @@
-FROM node:18-alpine
-
-# Create app directory
+# Base stage
+FROM node:18-alpine AS base
 WORKDIR /usr/src/app
-
-# Install OpenSSL for Prisma
 RUN apk add --no-cache openssl
-
-# Install app dependencies
 COPY package*.json ./
+COPY prisma ./prisma/
 
-# Install dependencies
+# Development stage
+FROM base AS dev
 RUN npm install
-
-# Bundle app source
 COPY . .
+RUN npx prisma generate
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
 
-# Build TypeScript code
+# Builder stage
+FROM dev AS builder
 RUN npm run build
 
-# Expose the port the app runs on
+# Production stage
+FROM base AS production
+RUN npm install --production
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /usr/src/app/node_modules/@prisma ./node_modules/@prisma
 EXPOSE 3000
-
-# Command to run the app
-CMD [ "npm", "start" ]
+CMD ["node", "dist/server.js"]

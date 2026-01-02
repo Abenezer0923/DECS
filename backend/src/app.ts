@@ -5,8 +5,12 @@ import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import routes from './routes';
+import { AlertService } from './services/alertService';
 
 const app = express();
+
+// Initialize Background Services
+new AlertService();
 
 // Middleware
 app.use(express.json());

@@ -1,7 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
+﻿generator client {
   provider = "prisma-client-js"
 }
 
@@ -60,6 +57,13 @@ enum AuditAction {
   CREATE
   UPDATE
   DELETE
+  ACCESS
+}
+
+enum RiskLevel {
+  Low
+  Medium
+  High
 }
 
 // Models
@@ -112,6 +116,7 @@ model Milestone {
   endDate               DateTime? @map("end_date")
   isStatutory           Boolean   @default(false) @map("is_statutory")
   status                MilestoneStatus @default(Planned)
+  riskLevel             RiskLevel @default(Low) @map("risk_level")
   
   // Self-relation for sub-tasks
   parentMilestoneId     Int?      @map("parent_milestone_id")
@@ -127,6 +132,8 @@ model Milestone {
   publicCalendarEntries PublicCalendarEntry[]
   alerts                Alert[]
   documents             Document[]
+  riskResponses         RiskResponse[]
+  translations          MilestoneTranslation[]
 
   @@map("milestones")
 }
@@ -206,4 +213,28 @@ model Document {
   uploadedAt  DateTime  @default(now()) @map("uploaded_at")
 
   @@map("documents")
+}
+
+model RiskResponse {
+  id          Int      @id @default(autoincrement())
+  milestoneId Int      @map("milestone_id")
+  milestone   Milestone @relation(fields: [milestoneId], references: [id])
+  content     String
+  type        String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("risk_responses")
+}
+
+model MilestoneTranslation {
+  id          Int      @id @default(autoincrement())
+  milestoneId Int      @map("milestone_id")
+  milestone   Milestone @relation(fields: [milestoneId], references: [id])
+  language    String
+  title       String
+  description String?
+
+  @@unique([milestoneId, language])
+  @@map("milestone_translations")
 }
