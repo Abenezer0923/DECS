@@ -23,8 +23,8 @@ async function main() {
 
   console.log('Roles seeded successfully');
 
-  // Create Users
-  const passwordHash = await bcrypt.hash('password123', 10);
+  // Create Users with default password: Admin@123
+  const passwordHash = await bcrypt.hash('Admin@123', 10);
 
   const users = [
     { username: 'admin', email: 'admin@decs.et', roleName: 'Admin', department: 'ICT' },
@@ -52,6 +52,12 @@ async function main() {
   }
 
   console.log('Users seeded successfully');
+  console.log('Default credentials:');
+  console.log('  Username: admin, Password: Admin@123');
+  console.log('  Username: board_member, Password: Admin@123');
+  console.log('  Username: comm_officer, Password: Admin@123');
+  console.log('  Username: legal_advisor, Password: Admin@123');
+  console.log('  Username: ops_manager, Password: Admin@123');
 }
 
 main()

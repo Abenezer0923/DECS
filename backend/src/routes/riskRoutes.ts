@@ -4,12 +4,11 @@ import { authenticate, authorize } from '../middlewares/authMiddleware';
 
 const router = Router();
 
-// Risk responses are sensitive, so restrict to Admin, Manager, and maybe a specific "Comms" role if it existed.
-// For now, Admin and Manager.
+// Risk responses are sensitive, so restrict to Admin and ManagementBoard
 
-router.post('/', authenticate, authorize(['Admin', 'Manager']), createRiskResponse);
-router.get('/milestone/:milestoneId', authenticate, authorize(['Admin', 'Manager']), getRiskResponses);
-router.put('/:id', authenticate, authorize(['Admin', 'Manager']), updateRiskResponse);
-router.delete('/:id', authenticate, authorize(['Admin', 'Manager']), deleteRiskResponse);
+router.post('/', authenticate, authorize(['Admin', 'ManagementBoard']), createRiskResponse);
+router.get('/milestone/:milestoneId', authenticate, authorize(['Admin', 'ManagementBoard']), getRiskResponses);
+router.put('/:id', authenticate, authorize(['Admin', 'ManagementBoard']), updateRiskResponse);
+router.delete('/:id', authenticate, authorize(['Admin', 'ManagementBoard']), deleteRiskResponse);
 
 export default router;
