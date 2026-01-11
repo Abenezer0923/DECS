@@ -12,10 +12,12 @@ import riskRoutes from './riskRoutes';
 import roleRoutes from './roleRoutes';
 import workflowRoutes from './workflowRoutes';
 import notificationRoutes from './notificationRoutes';
+import dashboardRoutes from './dashboardRoutes';
 
 const router = Router();
 
 router.use('/auth', authRoutes);
+router.use('/dashboard', dashboardRoutes);
 router.use('/elections', electionRoutes);
 router.use('/milestones', milestoneRoutes);
 router.use('/communications', communicationRoutes);

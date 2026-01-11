@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient, AuditAction } from '@prisma/client';
 import { CalendarService } from '../services/calendarService';
 import { AuditService } from '../services/auditService';
+import { SchedulerService } from '../services/schedulerService';
 import { AuthRequest } from '../middlewares/authMiddleware';
 
 const prisma = new PrismaClient();
@@ -64,7 +65,11 @@ export const getMilestones = async (req: Request, res: Response) => {
 
 export const createMilestone = async (req: Request, res: Response) => {
   try {
-    const { electionCycleId, title, description, startDate, endDate, isStatutory, legalBasis, responsibleDepartment } = req.body;
+    const { 
+        electionCycleId, title, description, startDate, endDate, 
+        isStatutory, legalBasis, responsibleDepartment, riskLevel 
+    } = req.body;
+    
     const userId = (req as AuthRequest).user?.id;
 
     const milestone = await prisma.milestone.create({
@@ -77,7 +82,8 @@ export const createMilestone = async (req: Request, res: Response) => {
         isStatutory: isStatutory || false,
         legalBasis,
         responsibleDepartment,
-        status: 'Planned'
+        status: 'Planned',
+        riskLevel: riskLevel || 'Low'
       },
     });
 
@@ -147,6 +153,15 @@ export const updateMilestone = async (req: Request, res: Response) => {
         riskLevel
       },
     });
+
+    // Trigger date cascade if end date changed
+    if (currentMilestone.endDate && milestone.endDate) {
+        await SchedulerService.cascadeDateChanges(
+            milestone.id, 
+            currentMilestone.endDate, 
+            milestone.endDate
+        );
+    }
 
     // Log Audit
     if (userId) {

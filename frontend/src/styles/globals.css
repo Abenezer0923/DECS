@@ -1,0 +1,377 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* NEBE Brand Colors - Ethiopian Flag Inspired */
+:root {
+  /* Primary - Green (Ethiopian Flag) */
+  --color-primary: #4caf50;
+  --color-primary-dark: #388e3c;
+  --color-primary-light: #81c784;
+  
+  /* Secondary - Yellow/Gold (Ethiopian Flag) */
+  --color-secondary: #ffc107;
+  --color-secondary-dark: #ffa000;
+  --color-secondary-light: #ffd54f;
+  
+  /* Accent - Blue (Professional) */
+  --color-accent: #2196f3;
+  --color-accent-dark: #1976d2;
+  --color-accent-light: #64b5f6;
+  
+  /* Ethiopian Flag Colors */
+  --color-ethiopian-green: #009639;
+  --color-ethiopian-yellow: #FEDD00;
+  --color-ethiopian-red: #DA121A;
+  
+  /* Semantic Colors */
+  --color-success: #4caf50;
+  --color-warning: #ffc107;
+  --color-danger: #f44336;
+  --color-info: #2196f3;
+  
+  /* Neutral Colors */
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #eeeeee;
+  --color-gray-300: #e0e0e0;
+  --color-gray-400: #bdbdbd;
+  --color-gray-500: #9e9e9e;
+  --color-gray-600: #757575;
+  --color-gray-700: #616161;
+  --color-gray-800: #424242;
+  --color-gray-900: #212121;
+}
+
+/* Base Styles */
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-gray-900;
+  }
+  
+  h1 {
+    @apply text-4xl;
+  }
+  
+  h2 {
+    @apply text-3xl;
+  }
+  
+  h3 {
+    @apply text-2xl;
+  }
+  
+  h4 {
+    @apply text-xl;
+  }
+  
+  h5 {
+    @apply text-lg;
+  }
+  
+  h6 {
+    @apply text-base;
+  }
+  
+  a {
+    @apply text-primary-600 hover:text-primary-700 transition-colors;
+  }
+  
+  button {
+    @apply transition-all duration-200;
+  }
+}
+
+/* Component Styles */
+@layer components {
+  /* Ethiopian Flag Gradient */
+  .ethiopian-gradient {
+    background: linear-gradient(
+      to right,
+      var(--color-ethiopian-green) 0%,
+      var(--color-ethiopian-yellow) 50%,
+      var(--color-ethiopian-red) 100%
+    );
+  }
+  
+  /* NEBE Brand Gradient */
+  .nebe-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 100%
+    );
+  }
+  
+  /* Card Styles */
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+  
+  .card-hover {
+    @apply card hover:shadow-md transition-shadow duration-200;
+  }
+  
+  /* Button Styles */
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700;
+    @apply focus:ring-primary-500;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-secondary-500 text-gray-900 hover:bg-secondary-600;
+    @apply focus:ring-secondary-500;
+  }
+  
+  .btn-accent {
+    @apply btn bg-accent-500 text-white hover:bg-accent-600;
+    @apply focus:ring-accent-500;
+  }
+  
+  .btn-danger {
+    @apply btn bg-danger-500 text-white hover:bg-danger-600;
+    @apply focus:ring-danger-500;
+  }
+  
+  .btn-ghost {
+    @apply btn bg-transparent hover:bg-gray-100 text-gray-700;
+  }
+  
+  .btn-outline {
+    @apply btn bg-transparent border-2 border-primary-600 text-primary-600;
+    @apply hover:bg-primary-50;
+  }
+  
+  /* Input Styles */
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply disabled:bg-gray-100 disabled:cursor-not-allowed;
+  }
+  
+  .input-error {
+    @apply input border-danger-500 focus:ring-danger-500;
+  }
+  
+  /* Badge Styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-800;
+  }
+  
+  .badge-secondary {
+    @apply badge bg-secondary-100 text-secondary-800;
+  }
+  
+  .badge-success {
+    @apply badge bg-success-100 text-success-800;
+  }
+  
+  .badge-warning {
+    @apply badge bg-warning-100 text-warning-800;
+  }
+  
+  .badge-danger {
+    @apply badge bg-danger-100 text-danger-800;
+  }
+  
+  /* Status Badges */
+  .status-planned {
+    @apply badge bg-accent-100 text-accent-800;
+  }
+  
+  .status-ongoing {
+    @apply badge bg-secondary-100 text-secondary-800;
+  }
+  
+  .status-completed {
+    @apply badge bg-success-100 text-success-800;
+  }
+  
+  .status-delayed {
+    @apply badge bg-danger-100 text-danger-800;
+  }
+  
+  .status-cancelled {
+    @apply badge bg-gray-100 text-gray-800;
+  }
+  
+  /* Alert Styles */
+  .alert {
+    @apply p-4 rounded-md border;
+  }
+  
+  .alert-success {
+    @apply alert bg-success-50 border-success-200 text-success-800;
+  }
+  
+  .alert-warning {
+    @apply alert bg-warning-50 border-warning-200 text-warning-800;
+  }
+  
+  .alert-danger {
+    @apply alert bg-danger-50 border-danger-200 text-danger-800;
+  }
+  
+  .alert-info {
+    @apply alert bg-accent-50 border-accent-200 text-accent-800;
+  }
+  
+  /* Table Styles */
+  .table {
+    @apply w-full border-collapse;
+  }
+  
+  .table thead {
+    @apply bg-gray-50 border-b-2 border-gray-200;
+  }
+  
+  .table th {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+  }
+  
+  .table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+  }
+  
+  .table tbody tr {
+    @apply border-b border-gray-200 hover:bg-gray-50 transition-colors;
+  }
+  
+  /* Loading Spinner */
+  .spinner {
+    @apply inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin;
+  }
+  
+  /* Ethiopian Flag Stripe */
+  .ethiopian-stripe {
+    @apply h-1 w-full;
+    background: linear-gradient(
+      to right,
+      var(--color-ethiopian-green) 0%,
+      var(--color-ethiopian-green) 33.33%,
+      var(--color-ethiopian-yellow) 33.33%,
+      var(--color-ethiopian-yellow) 66.66%,
+      var(--color-ethiopian-red) 66.66%,
+      var(--color-ethiopian-red) 100%
+    );
+  }
+}
+
+/* Utility Classes */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Custom Scrollbar */
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    @apply bg-primary-400 rounded hover:bg-primary-500;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    @apply bg-white;
+  }
+  
+  .card {
+    @apply shadow-none border;
+  }
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+  /* Uncomment to enable dark mode
+  :root {
+    --color-primary: #66bb6a;
+    --color-secondary: #ffd54f;
+  }
+  
+  body {
+    @apply bg-gray-900 text-gray-100;
+  }
+  */
+}

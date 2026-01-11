@@ -1,0 +1,86 @@
+# DECS Full Stack Docker Compose
+# Runs backend API, database, and frontend together
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: decs-database
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: decs_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - decs-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: decs-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=postgresql://postgres:password@db:5432/decs_db?schema=public
+      - JWT_SECRET=supersecretkey
+      - SMTP_HOST=smtp.ethereal.email
+      - SMTP_PORT=587
+      - SMTP_USER=test@ethereal.email
+      - SMTP_PASS=test
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/usr/src/app/src
+      - ./backend/tsconfig.json:/usr/src/app/tsconfig.json
+      - ./backend/uploads:/usr/src/app/uploads
+    networks:
+      - decs-network
+    command: sh -c "npm install && npm run dev"
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: decs-frontend
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+      - NEXT_PUBLIC_APP_NAME=DECS
+      - NEXT_PUBLIC_APP_VERSION=2.0.0
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - decs-network
+    command: npm run dev
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  decs-network:
+    driver: bridge
